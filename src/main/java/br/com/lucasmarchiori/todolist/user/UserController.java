@@ -1,5 +1,6 @@
 package br.com.lucasmarchiori.todolist.user;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import br.com.lucasmarchiori.todolist.user.interfaces.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,16 +19,16 @@ public class UserController {
 
     @PostMapping("/")
     public ResponseEntity create(@RequestBody UserModel userModel) {
-        System.out.println(userModel.getUsername());
-
         UserModel user = this.userRepository.findByUsername(userModel.getUsername());
 
         if(user != null) {
-            System.out.println(user);
-            System.out.println("User already exists");
-
             return ResponseEntity.status(HttpStatus.CONFLICT).body("User already exists!");
         }
+
+        String passwordHashred = BCrypt.withDefaults().hashToString(12, userModel.getPassword().toCharArray());
+
+
+        userModel.setPassword(passwordHashred);
 
         UserModel createdUser = this.userRepository.save(userModel);
 
