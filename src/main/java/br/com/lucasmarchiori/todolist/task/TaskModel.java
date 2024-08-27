@@ -25,7 +25,7 @@ public class TaskModel {
     private LocalDateTime startAt;
     private LocalDateTime endAt;
     private String priority;
-    private String userId;
+    private UUID userId;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
