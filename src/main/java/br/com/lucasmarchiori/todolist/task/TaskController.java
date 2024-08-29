@@ -18,6 +18,15 @@ public class TaskController {
     @Autowired
     private ITaskRepository taskRepository;
 
+    @GetMapping("/")
+    public ResponseEntity list(HttpServletRequest request) {
+        var userId = request.getAttribute("userId");
+
+        List<TaskModel> tasks = this.taskRepository.findAllByUserId((UUID) userId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(tasks);
+    }
+
     @PostMapping("/")
     public ResponseEntity create(@RequestBody TaskModel taskModel, HttpServletRequest request) {
         var userId = request.getAttribute("userId");
@@ -39,12 +48,13 @@ public class TaskController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdTask);
     }
 
-    @GetMapping("/")
-    public ResponseEntity list(HttpServletRequest request) {
+    @PutMapping("/{id}")
+    public TaskModel update(@PathVariable UUID id, @RequestBody TaskModel taskModel, HttpServletRequest request) {
         var userId = request.getAttribute("userId");
 
-        List<TaskModel> tasks = this.taskRepository.findAllByUserId((UUID) userId);
+        taskModel.setId(id);
+        taskModel.setUserId((UUID) userId);
 
-        return ResponseEntity.status(HttpStatus.OK).body(tasks);
+        return this.taskRepository.save(taskModel);
     }
 }
